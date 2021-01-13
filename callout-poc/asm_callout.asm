@@ -145,7 +145,7 @@ align 10h
 ;so by setting rbp to a valid IRET stack (after adding the rsp offset), we can have it load back our stack and instruction pointer - with interrupts disabled
 ;the only problem is that putting our instruction pointer here would leave it exposed on the stack - which is solved by having it point towards a RET instruction (which is valid) and pushing return_loc on to the stack that is loaded (our stack)
 ;which means that this routine loads our stack, disables interrupts, jumps to a ret instruction, causing it to return here - all with interrupts disabled and no obvious traces on the kernel stack
-;we may have to add 8 to rsp, depending on if i had to align it earlier
+;we may have to add 8 to rsp, depending on if we had to align it earlier
 
 return_loc:
 add rsp, 8
