@@ -25,7 +25,7 @@ extern g_rop_gadget_addr:qword
 
 align 10h
 
-;void *callout_invoke(void *function, void *old_kernel_stack, size_t stack_arg_count, ULONG64 eflags_xor, ULONG64 r1, ULONG64 r2, ULONG64 r3, ULONG64 r4, ...)
+;void *callout_invoke(void *function, void *old_kernel_stack, size_t stack_arg_count, size_t eflags_xor, void *r1, void *r2, void *r3, void *r4, ...)
 ;note that the old_kernel_stack is always misaligned; it is always aligned to 8 bytes.
 callout_invoke proc
 

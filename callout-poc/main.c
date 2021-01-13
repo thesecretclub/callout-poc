@@ -43,29 +43,34 @@ static void thread_boostrapper(void *start_context, void *kernel_stack_preserve)
 	//-interrupts are disabled; you can not read or write paged memory without a callout. this can potentially be mitigated with an imported memcpy (NOTING CAREFULLY TO NOT PREVENT THE COMPILER FROM INSERTING ITS OWN MEMCPY! YOU WANT THE MEMCPY EXPORTED BY NTOSKRNL.EXE)
 
 	//here, we can mostly do what we want.
-	callout_invoke((void *)DbgPrintEx, kernel_stack_preserve, 3, CALLOUT_ENABLE_INTERRUPT_FLAG, DPFLTR_IHVDRIVER_ID, 0, (ULONG64)"Test of printing. varargs: %u %u %u %u\n", 1, 2, 3, 4);
+	callout_invoke((void *)DbgPrintEx, kernel_stack_preserve, 3, CALLOUT_ENABLE_INTERRUPT_FLAG, (void *)DPFLTR_IHVDRIVER_ID, (void *)0, "Test of printing. varargs: %u %u %u %u\n", (void *)1, 2, 3, 4);
 
 	//we can even sleep...
 	LARGE_INTEGER sleep_interval;
 	sleep_interval.QuadPart = (ULONG64)-(1000 * 1000 * 10);
 
-	callout_invoke((void *)KeDelayExecutionThread, kernel_stack_preserve, 0, CALLOUT_ENABLE_INTERRUPT_FLAG, KernelMode, TRUE, (ULONG64)&sleep_interval, 0);
-	callout_invoke((void *)DbgPrintEx, kernel_stack_preserve, 0, CALLOUT_ENABLE_INTERRUPT_FLAG, DPFLTR_IHVDRIVER_ID, 0, (ULONG64)"(Probably) slept for one second\n", 0);
+	callout_invoke((void *)KeDelayExecutionThread, kernel_stack_preserve, 0, CALLOUT_ENABLE_INTERRUPT_FLAG, (void *)KernelMode, (void *)TRUE, &sleep_interval, NULL);
+	callout_invoke((void *)DbgPrintEx, kernel_stack_preserve, 0, CALLOUT_ENABLE_INTERRUPT_FLAG, (void *)DPFLTR_IHVDRIVER_ID, (void *)0, "(Probably) slept for one second\n", NULL);
 
 	//...or allocate memory...
-	size_t *const alloc_base = callout_invoke((void *)ExAllocatePool, kernel_stack_preserve, 0, CALLOUT_ENABLE_INTERRUPT_FLAG, NonPagedPool, sizeof(size_t), 0, 0);
+	size_t *const alloc_base = callout_invoke((void *)ExAllocatePool, kernel_stack_preserve, 0, CALLOUT_ENABLE_INTERRUPT_FLAG, (void *)NonPagedPool, (void *)sizeof(size_t), NULL, NULL);
 
 	if (alloc_base)
 	{
-		callout_invoke((void *)DbgPrintEx, kernel_stack_preserve, 0, CALLOUT_ENABLE_INTERRUPT_FLAG, DPFLTR_IHVDRIVER_ID, 0, (ULONG64)"Alloc succeeded 0x%llX\n", (ULONG64)alloc_base);
-		callout_invoke((void *)ExFreePoolWithTag, kernel_stack_preserve, 0, CALLOUT_ENABLE_INTERRUPT_FLAG, (ULONG64)alloc_base, 0, 0, 0);
+		callout_invoke((void *)DbgPrintEx, kernel_stack_preserve, 0, CALLOUT_ENABLE_INTERRUPT_FLAG, (void *)DPFLTR_IHVDRIVER_ID, (void *)0, "Alloc succeeded 0x%llX\n", alloc_base);
+		callout_invoke((void *)ExFreePoolWithTag, kernel_stack_preserve, 0, CALLOUT_ENABLE_INTERRUPT_FLAG, alloc_base, NULL, NULL, NULL);
+	}
+	else
+	{
+		//system out of memory?
+		callout_invoke((void *)DbgPrintEx, kernel_stack_preserve, 0, CALLOUT_ENABLE_INTERRUPT_FLAG, (void *)DPFLTR_IHVDRIVER_ID, (void *)0, "Alloc failed\n", NULL);
 	}
 
 	//and we can enter an infinite loop.
 	for (size_t i = 0;; i++)
 	{
-		callout_invoke((void *)KeDelayExecutionThread, kernel_stack_preserve, 0, CALLOUT_ENABLE_INTERRUPT_FLAG, KernelMode, TRUE, (ULONG64)&sleep_interval, 0);
-		callout_invoke((void *)DbgPrintEx, kernel_stack_preserve, 0, CALLOUT_ENABLE_INTERRUPT_FLAG, DPFLTR_IHVDRIVER_ID, 0, (ULONG64)"iter %u\n", i);
+		callout_invoke((void *)KeDelayExecutionThread, kernel_stack_preserve, 0, CALLOUT_ENABLE_INTERRUPT_FLAG, (void *)KernelMode, (void *)TRUE, &sleep_interval, NULL);
+		callout_invoke((void *)DbgPrintEx, kernel_stack_preserve, 0, CALLOUT_ENABLE_INTERRUPT_FLAG, (void *)DPFLTR_IHVDRIVER_ID, (void *)0, "iter %u\n", (void *)i);
 	}
 }
 
