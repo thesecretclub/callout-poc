@@ -65,7 +65,7 @@ mov [rdx + 28h], rcx
 ;keep this in rbp. this will be used by our ROP gadget to jump back here
 lea rbp, [rdx + 28h]
 
-;if we have more than 4 args, we need to push shit on to the stack
+;if we have more than 4 args, we need to push args on to the stack
 test r8, r8
 jz no_sub_rsp
 
