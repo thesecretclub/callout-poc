@@ -1,5 +1,5 @@
 # callout-poc
-This repository includes an example proof-of-concept of the callout thread and mechanism. The project is licensed under the MIT license.
+This repository includes an example proof-of-concept of callout threads and the callout mechanism. The project is licensed under the MIT license.
 
 Example of expected kernel debugger output on running the POC:
 
