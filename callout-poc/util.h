@@ -33,7 +33,7 @@ extern __declspec(dllimport) NTSTATUS ZwQuerySystemInformation(
 
 //find the base address of a kernel module/driver given its ascii-converted name
 //this function is kind of bad, but should generally work for most (if not all) people
-uintptr_t util_get_kernel_module(const char *module_name)
+static uintptr_t util_get_kernel_module(const char *module_name)
 {
 	typedef struct _RTL_PROCESS_MODULE_INFORMATION
 	{
